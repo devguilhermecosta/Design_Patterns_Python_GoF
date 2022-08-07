@@ -1,105 +1,157 @@
 """
-Factory Method é um padrão de criação que permite definir uma interface para
-criar objetos, mas deixa as subclasses decidirem quais objetos criar.
-O Factory Method permite adiar a instanciação para as subclasses, garantindo
-o baixo acoplamento entre classes.  
+Abstract Factory é um padrão de criação que fornece uma interface para criar
+famílias de objetos relacionados ou depedentes sem especificar suas classes
+concretas. Geralmente Abstract Factory conta com um ou mais Factory Methods
+para criar seus objetos.
+
+Uma diferença importante entre Factory Method e Abstract Factory é que o
+Factory Method usa herença, enquanto Abstract Factory usa a composição.
+
+Princípio: programe para interfaces, não para implementações.
 """
 from abc import ABC, abstractmethod
-from random import choice
 
 
-#CLASSE ABSTRATA
 class Veiculo(ABC):
-    """Class Abstrata que cria objetos do tipo Veículo"""
     @abstractmethod
-    def get_veiculo(self):
-        """Método abstrado que cria um 'contrato' com o desenvolvedor,
-        garantindo que as classes que herdam de 'Veículo' tenham este método."""
-        pass
-    
-   
-#CLASSE ABSTRATA    
+    def get_veiculo(self): pass
+            
+
+class VeiculoPopular(Veiculo, ABC):
+    @abstractmethod
+    def get_veiculo(self) -> None: pass
+
+
+class VeiculoLuxo(Veiculo, ABC):
+    @abstractmethod
+    def get_veiculo(self) -> None: pass
+
+
 class VeiculoFactory(ABC):
-    def __init__(self, tipo: str):
-        self.__buscar_cliente(tipo)
-    
+    @staticmethod
     @abstractmethod
-    def get_veiculo(self, tipo: str) -> None:
-        pass
-        
-    def __buscar_cliente(self,tipo: str) -> None:
-        self.get_veiculo(tipo)
+    def get_carro_popular() -> None | VeiculoPopular: pass
+    
+    @staticmethod
+    @abstractmethod
+    def get_carro_luxo() -> None | VeiculoLuxo: pass
+    
+    @staticmethod
+    @abstractmethod
+    def get_moto_popular() -> None | VeiculoPopular: pass
+    
+    @staticmethod
+    @abstractmethod
+    def get_moto_luxo() -> None | VeiculoLuxo: pass
     
 
-class CarroPopular(Veiculo):
-    def __init__(self):
-        self.get_veiculo()
-    
+class CarroPopularZN(VeiculoPopular):    
     def get_veiculo(self) -> None:
-        print('Cliente está usando Carro Popular')
+        print('Cliente ZN está usando Carro Popular')
 
 
-class CarroLuxo(Veiculo):
-    def __init__(self):
-        self.get_veiculo()
-    
+class CarroLuxoZN(VeiculoLuxo):    
     def get_veiculo(self) -> None:
-        print('Cliente está usando Carro Luxo')
+        print('Cliente ZN está usando Carro Luxo')
         
 
-class MotoPopular(Veiculo):
-    def __init__(self):
-        self.get_veiculo()
-        
+class MotoPopularZN(VeiculoPopular):        
     def get_veiculo(self) -> None:
-        print('Cliente está usando Moto Popular')        
+        print('Cliente ZN está usando Moto Popular')        
 
 
-class MotoLuxo(Veiculo):
-    def __init__(self):
-        self.get_veiculo()
-        
+class MotoLuxoZN(VeiculoLuxo):        
     def get_veiculo(self) -> None:
-        print('Cliente está usando Moto de Luxo')
+        print('Cliente ZN está usando Moto de Luxo')
+       
+        
+class CarroPopularZS(VeiculoPopular):    
+    def get_veiculo(self) -> None:
+        print('Cliente ZS está usando Carro Popular')
+
+
+class CarroLuxoZS(VeiculoLuxo):    
+    def get_veiculo(self) -> None:
+        print('Cliente ZS está usando Carro Luxo')
+        
+
+class MotoPopularZS(VeiculoPopular):        
+    def get_veiculo(self) -> None:
+        print('Cliente ZS está usando Moto Popular')        
+
+
+class MotoLuxoZS(VeiculoLuxo):        
+    def get_veiculo(self) -> None:
+        print('Cliente ZS está usando Moto de Luxo')
         
 
 class ZonaSulVeiculos(VeiculoFactory):
-    def get_veiculo(self, tipo: str) -> None | CarroPopular | CarroLuxo | MotoPopular | MotoLuxo:
-        if tipo == 'carro_popular':
-            return CarroPopular()
-        if tipo == 'carro_luxo':
-            return CarroLuxo()
-        if tipo == 'moto_popular':
-            return MotoPopular()
-        if tipo == 'moto_luxo':
-            return MotoLuxo()
-        return None
+    @staticmethod
+    def get_carro_popular() -> VeiculoPopular:
+        return CarroPopularZS()
     
+    @staticmethod
+    def get_carro_luxo() -> VeiculoLuxo:
+        return CarroLuxoZS()
+    
+    @staticmethod
+    def get_moto_popular() -> VeiculoPopular:
+        return MotoPopularZS()
+    
+    @staticmethod
+    def get_moto_luxo() -> VeiculoLuxo:
+        return MotoLuxoZS()
 
 class ZonaNorteVeiculos(VeiculoFactory):
-    def get_veiculo(self, tipo: str) -> None | CarroPopular | CarroLuxo | MotoPopular | MotoLuxo:
-        if tipo == 'carro_popular':
-            return CarroPopular()
-        if tipo == 'carro_luxo':
-            return CarroLuxo()
-        return None
+    @staticmethod
+    def get_carro_popular() -> VeiculoPopular:
+        return CarroPopularZN()
+    
+    @staticmethod
+    def get_carro_luxo() -> VeiculoLuxo:
+        return CarroLuxoZN()
+    
+    @staticmethod
+    def get_moto_popular() -> VeiculoPopular:
+        return MotoPopularZN()
+    
+    @staticmethod
+    def get_moto_luxo() -> VeiculoLuxo:
+        return MotoLuxoZN()
+    
 
+class Cliente:
+    def buscar_clientes_ZS(self):
+        for factory in [ZonaSulVeiculos()]:
+            cp = factory.get_carro_popular()
+            cp.get_veiculo()
+            
+            cl = factory.get_carro_luxo()
+            cl.get_veiculo()
+                        
+            mp = factory.get_moto_popular()
+            mp.get_veiculo()  
+                                  
+            ml = factory.get_moto_luxo()
+            ml.get_veiculo()    
+            
+    def buscar_clientes_ZN(self):
+        for factory in [ZonaNorteVeiculos()]:
+            cp = factory.get_carro_popular()
+            cp.get_veiculo()
+            
+            cl = factory.get_carro_luxo()
+            cl.get_veiculo()
+                        
+            mp = factory.get_moto_popular()
+            mp.get_veiculo()  
+                                  
+            ml = factory.get_moto_luxo()
+            ml.get_veiculo()
+        
 
 if __name__ == '__main__':
-    lista_carros = ['carro_popular', 
-                    'carro_luxo',
-                    'moto_popular',
-                    'moto_luxo',]
-    
-    print('Carros da Zona Sul')
-    for choices in range(10):
-        cliente = ZonaSulVeiculos(choice(lista_carros))
-
+    cliente = Cliente()
+    cliente.buscar_clientes_ZS()
     print('')
-    
-    lista_carros1 = ['carro_popular', 
-                    'carro_luxo',
-                    ]
-    print('Carros da Zona Norte')
-    for choices in range(10):
-        cliente1 = ZonaNorteVeiculos(choice(lista_carros1))
+    cliente.buscar_clientes_ZN()
