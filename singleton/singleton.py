@@ -15,6 +15,10 @@ Aqui veremos três maneiras de implementar um Sigleton:
 """
 
 # 01 -> IMPLEMENTANDO O PADRÃO SINGLETON COM A PRÓPRIA CLASSE.
+from tokenize import Single
+from typing import Dict
+
+
 class AppSettings:
     
     # atributo de classe que recebe um dict vazio como valor.
@@ -97,3 +101,34 @@ if __name__ == '__main__':
 
 
 # 03 -> IMPLEMENTANDO O PADRÃO SINGLETON COM METACLASSE.
+
+
+# classe que será implementada como metaclass
+# Deve herdar de type.
+class Singleton(type):
+    
+    # atributo de classe que guardará as iformaçõe da variável
+    # que está instanciando a classe MaisUmSettings()
+    _instance: dict = {}
+    
+    # o método mágico __call__ permite que uma classe seja instanciada
+    # como uma função.
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instance:
+            cls._instance[cls] = super().__call__(*args, **kwargs)
+        return cls._instance[cls]
+    
+
+# a classe deve receber a Singleton criada como metaclass
+class MaisUmSettigns(metaclass=Singleton):
+    def __init__(self):
+        self.tema = 'escuro'
+        self.fonte = '18px'
+        
+        
+if __name__ == '__main__':
+    m1 = MaisUmSettigns()
+    print(m1.fonte)
+    m1.fonte = 'zero'
+    m2 = MaisUmSettigns()
+    print(m2.fonte)
